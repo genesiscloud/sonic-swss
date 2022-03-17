@@ -149,7 +149,7 @@ public:
         return active_;
     }
 
-    bool createTunnel(MAP_T encap, MAP_T decap, uint8_t encap_ttl=0);
+    bool createTunnel(MAP_T encap, MAP_T decap, uint8_t encap_ttl=128);
     sai_object_id_t addEncapMapperEntry(sai_object_id_t obj, uint32_t vni, 
                                         tunnel_map_type_t type=TUNNEL_MAP_T_VIRTUAL_ROUTER);
     sai_object_id_t addDecapMapperEntry(sai_object_id_t obj, uint32_t vni,
@@ -197,7 +197,7 @@ public:
 
     bool deleteMapperHw(uint8_t mapper_list, tunnel_map_use_t map_src);
     bool createMapperHw(uint8_t mapper_list, tunnel_map_use_t map_src);
-    bool createTunnelHw(uint8_t mapper_list, tunnel_map_use_t map_src, bool with_term = true, sai_uint8_t encap_ttl=0);
+    bool createTunnelHw(uint8_t mapper_list, tunnel_map_use_t map_src, bool with_term = true, sai_uint8_t encap_ttl=128);
     bool deleteTunnelHw(uint8_t mapper_list, tunnel_map_use_t map_src, bool with_term = true);
     void deletePendingSIPTunnel();
     void increment_spurious_imr_add(const std::string remote_vtep);
@@ -300,7 +300,7 @@ public:
 
 
     bool createVxlanTunnelMap(string tunnelName, tunnel_map_type_t mapType, uint32_t vni,
-                              sai_object_id_t encap, sai_object_id_t decap, uint8_t encap_ttl=0);
+                              sai_object_id_t encap, sai_object_id_t decap, uint8_t encap_ttl=128);
 
     bool removeVxlanTunnelMap(string tunnelName, uint32_t vni);
 
