@@ -251,7 +251,7 @@ void TeamMgr::doLagTask(Consumer &consumer)
         if (op == SET_COMMAND)
         {
             int min_links = 0;
-            bool fallback = false;
+            bool fallback = false, fast_rate = false;
             string admin_status = DEFAULT_ADMIN_STATUS_STR;
             string mtu = DEFAULT_MTU_STR;
             string learn_mode;
@@ -271,6 +271,12 @@ void TeamMgr::doLagTask(Consumer &consumer)
                     fallback = fvValue(i) == "true";
                     SWSS_LOG_INFO("Get fallback option %s",
                             fallback ? "true" : "false");
+                }
+                else if (fvField(i) == "fast_rate")
+                {
+                    fast_rate = fvValue(i) == "true";
+                    SWSS_LOG_INFO("Get fast_rate option %s",
+                            fast_rate ? "true" : "false");
                 }
                 else if (fvField(i) == "admin_status")
                 {
@@ -298,7 +304,7 @@ void TeamMgr::doLagTask(Consumer &consumer)
 
             if (m_lagList.find(alias) == m_lagList.end())
             {
-                if (addLag(alias, min_links, fallback) == task_need_retry)
+                if (addLag(alias, min_links, fallback, fast_rate) == task_need_retry)
                 {
                     it++;
                     continue;
@@ -553,7 +559,7 @@ bool TeamMgr::setLagLearnMode(const string &alias, const string &learn_mode)
     return true;
 }
 
-task_process_status TeamMgr::addLag(const string &alias, int min_links, bool fallback)
+task_process_status TeamMgr::addLag(const string &alias, int min_links, bool fallback, bool fast_rate)
 {
     SWSS_LOG_ENTER();
 
@@ -608,6 +614,11 @@ task_process_status TeamMgr::addLag(const string &alias, int min_links, bool fal
     if (fallback)
     {
         conf << ",\"fallback\":true";
+    }
+
+    if (fast_rate)
+    {
+        conf << ",\"fast_rate\":true";
     }
 
     conf << "}}'";
