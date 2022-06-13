@@ -2017,6 +2017,7 @@ bool VxlanTunnelMapOrch::addOperation(const Request& request)
         TUNNELMAP_SET_VLAN(mapper_list);
         TUNNELMAP_SET_VRF(mapper_list);
         tunnel_obj->createTunnelHw(mapper_list,TUNNEL_MAP_USE_DEDICATED_ENCAP_DECAP);
+#if 0
         Port tunPort;
         auto src_vtep = tunnel_obj->getSrcIP().to_string();
         if (!tunnel_orch->getTunnelPort(src_vtep, tunPort, true))
@@ -2026,6 +2027,7 @@ bool VxlanTunnelMapOrch::addOperation(const Request& request)
             gPortsOrch->getPort(port_tunnel_name,tunPort);
             gPortsOrch->addBridgePort(tunPort);
         }
+#endif
     }
 
     const auto tunnel_map_id = tunnel_obj->getDecapMapId(TUNNEL_MAP_T_VLAN);
