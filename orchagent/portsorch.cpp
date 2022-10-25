@@ -753,7 +753,10 @@ bool PortsOrch::getPort(sai_object_id_t id, Port &port)
     }
     else
     {
-        getPort(itr->second, port);
+        if (!getPort(itr->second, port))
+        {
+            SWSS_LOG_THROW("Inconsistent saiOidToAlias map and m_portList map: oid=%" PRIx64, id);
+        }
         return true;
     }
 
@@ -3330,6 +3333,7 @@ void PortsOrch::doPortTask(Consumer &consumer)
 
             /* Delete port from port list */
             m_portList.erase(alias);
+            saiOidToAlias.erase(port_id);
         }
         else
         {
@@ -5630,7 +5634,7 @@ void PortsOrch::doTask(NotificationConsumer &consumer)
 
             if (!getPort(id, port))
             {
-                SWSS_LOG_ERROR("Failed to get port object for port id 0x%" PRIx64, id);
+                SWSS_LOG_NOTICE("Got port state change for port id 0x%" PRIx64 " which does not exist, possibly outdated event", id);
                 continue;
             }
 

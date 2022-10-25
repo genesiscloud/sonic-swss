@@ -862,7 +862,7 @@ namespace portsorch_test
     * updated to DB.
     */
     TEST_F(PortsOrchTest, PortOperStatusIsUpAndOperSpeedIsZero)
-    {   
+    {
         Table portTable = Table(m_app_db.get(), APP_PORT_TABLE_NAME);
 
         // Get SAI default ports to populate DB
@@ -887,7 +887,7 @@ namespace portsorch_test
         Port port;
         gPortsOrch->getPort("Ethernet0", port);
         ASSERT_TRUE(port.m_oper_status != SAI_PORT_OPER_STATUS_UP);
-        
+
         // save original api since we will spy
         auto orig_port_api = sai_port_api;
         sai_port_api = new sai_port_api_t();
@@ -905,14 +905,14 @@ namespace portsorch_test
                     // Return 0 for port operational speed
                     attrs[0].value.u32 = 0;
                 }
-                
+
                 return (sai_status_t)SAI_STATUS_SUCCESS;
             }
         );
 
         auto exec = static_cast<Notifier *>(gPortsOrch->getExecutor("PORT_STATUS_NOTIFICATIONS"));
         auto consumer = exec->getNotificationConsumer();
-        
+
         // mock a redis reply for notification, it notifies that Ehernet0 is going to up
         mockReply = (redisReply *)calloc(sizeof(redisReply), 1);
         mockReply->type = REDIS_REPLY_ARRAY;
@@ -934,7 +934,7 @@ namespace portsorch_test
         // trigger the notification
         consumer->readData();
         gPortsOrch->doTask(*consumer);
-        mockReply = nullptr; 
+        mockReply = nullptr;
 
         gPortsOrch->getPort("Ethernet0", port);
         ASSERT_TRUE(port.m_oper_status == SAI_PORT_OPER_STATUS_UP);
