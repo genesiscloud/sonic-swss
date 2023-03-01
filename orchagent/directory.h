@@ -27,6 +27,11 @@ public:
         m_values[type_name] = value;
     }
 
+    void clear()
+    {
+        m_values.clear();
+    }
+
     template <typename U>
     const U get() const
     {
