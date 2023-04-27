@@ -5977,6 +5977,24 @@ bool PortsOrch::setDistributionOnLagMember(Port &lagMember, bool enableDistribut
     sai_attribute_t attr {};
 
     attr.id = SAI_LAG_MEMBER_ATTR_EGRESS_DISABLE;
+
+    /* Setting SAI_LAG_MEMBER_ATTR_EGRESS_DISABLE=true doesn't appear to be idempotent
+     * on Broadcom. If a LAG flaps and Consumer::addToSync ends up merging two consecutive
+     * updates so that we disable a member that's already disabled, it will fail.
+     * Therefore, query the current state and skip if it's already correct. */
+    status = sai_lag_api->get_lag_member_attribute(lagMember.m_lag_member_id, 1, &attr);
+    if (status != SAI_STATUS_SUCCESS)
+    {
+        SWSS_LOG_ERROR("Failed to query distribution on LAG member %s, assuming we need to set",
+            lagMember.m_alias.c_str());
+    }
+    else if (attr.value.booldata == !enableDistribution) {
+        SWSS_LOG_WARN("Distribution on LAG member %s is already %s, skipping...",
+            lagMember.m_alias.c_str(),
+            enableDistribution ? "enabled" : "disabled");
+        return true;
+    }
+
     attr.value.booldata = !enableDistribution;
 
     status = sai_lag_api->set_lag_member_attribute(lagMember.m_lag_member_id, &attr);
